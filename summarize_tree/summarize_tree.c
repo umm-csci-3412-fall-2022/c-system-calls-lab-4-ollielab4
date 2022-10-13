@@ -7,25 +7,40 @@
 #include <string.h>
 
 static int num_dirs, num_regular;
-
-bool is_dir(const char* path) {
-  /*
-   * Use the stat() function (try "man 2 stat") to determine if the file
-   * referenced by path is a directory or not.  Call stat, and then use
-   * S_ISDIR to see if the file is a directory. Make sure you check the
-   * return value from stat() in case there is a problem, e.g., maybe the
-   * the file doesn't actually exist.
-   */
-}
-
-/* 
- * I needed this because the multiple recursion means there's no way to
- * order them so that the definitions all precede the cause.
- */
 void process_path(const char*);
 
+bool is_dir(const char* path) {
+	if (path != NULL){
+		struct stat *buf = malloc(sizeof(*buf));
+		stat(path,buf);
+		bool a = S_ISDIR((*buf).st_mode);
+		num_dirs++;
+		free(buf);
+		return a;
+	}else{
+		return false;
+	}
+}
+
 void process_directory(const char* path) {
-  /*
+	DIR *dir;
+	struct dirent *dp;
+	if ((dir = opendir (path)) == NULL) {
+		perror ("Cannot open .");
+		exit (1);
+	}
+	chdir(path);
+	while ((dp = readdir (dir)) != NULL) { 
+		if((dp*).d_name != "." && (dp*).d_name != ".."){
+			process_path((dp*).d_name);
+		}
+	}
+	chdir("..");
+	closedir(path);
+
+
+
+   /*
    * Update the number of directories seen, use opendir() to open the
    * directory, and then use readdir() to loop through the entries
    * and process them. You have to be careful not to process the

@@ -14,7 +14,6 @@ bool is_dir(const char* path) {
 		struct stat *buf = malloc(sizeof(*buf));
 		stat(path,buf);
 		bool a = S_ISDIR((*buf).st_mode);
-		num_dirs++;
 		free(buf);
 		return a;
 	}else{
@@ -25,18 +24,20 @@ bool is_dir(const char* path) {
 void process_directory(const char* path) {
 	DIR *dir;
 	struct dirent *dp;
+
 	if ((dir = opendir (path)) == NULL) {
 		perror ("Cannot open .");
 		exit (1);
 	}
+	num_dirs++;
 	chdir(path);
 	while ((dp = readdir (dir)) != NULL) { 
-		if((dp*).d_name != "." && (dp*).d_name != ".."){
-			process_path((dp*).d_name);
+		if(strcmp((*dp).d_name, ".") && strcmp((*dp).d_name,  "..")){
+			process_path((*dp).d_name);
 		}
 	}
 	chdir("..");
-	closedir(path);
+	closedir(dir);
 
 
 
@@ -54,10 +55,7 @@ void process_directory(const char* path) {
 }
 
 void process_file(const char* path) {
-  /*
-   * Update the number of regular files.
-   * This is as simple as it seems. :-)
-   */
+	num_regular++;
 }
 
 void process_path(const char* path) {
